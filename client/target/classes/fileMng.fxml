@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="326.0" prefWidth="353.0" spacing="15.0"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ChatController" >
+   <children>
+      <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <TextField fx:id="clientPath" editable="false" HBox.hgrow="ALWAYS"/>
+                  <Button mnemonicParsing="false" text=".." onAction="#clientUp"/>
+               </children>
+            </HBox>
+            <ListView fx:id="clientList">
+            <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            </ListView>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Загрузить" onAction="#upFile" />
+
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <TextField fx:id="serverPath" editable="false" HBox.hgrow="ALWAYS"/>
+                  <Button mnemonicParsing="false" text=".." onAction="#serverUp"/>
+               </children>
+            </HBox>
+            <ListView fx:id="serverList" >
+                <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </ListView>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Скачать" onAction="#downFile" />
+
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</HBox>
