@@ -30,6 +30,10 @@ public class MessageHandler extends SimpleChannelInboundHandler<AbstractCommand>
     protected void channelRead0(ChannelHandlerContext chc, AbstractCommand command) throws Exception {
         log.debug("received: {}", command.getType());
         switch (command.getType()) {
+            case AUTOK:
+                chc.writeAndFlush(new AuthUser());
+                break;
+
             case FILE_REQUEST:
                 FileRequest fileRequest = (FileRequest) command;
                 Message msg = new Message(currentPath.resolve((fileRequest.getName())));
