@@ -2,85 +2,77 @@ import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import model.AbstractCommand;
-import model.AuthUser;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import model.*;
+
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.*;
-
+import java.sql.SQLException;
 
 public class AuthController {
     public TextField loginTF;
     public PasswordField passwordTF;
-    private DataInputStream in;
-    private DataOutputStream out;
-    public String nick;
     private ObjectEncoderOutputStream os;
     private ObjectDecoderInputStream is;
 
-    static {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     @FXML
     private void initialize() throws IOException {
+        try {
+            Socket socket = new ConnectionServer().getSocket();
+            os = new ObjectEncoderOutputStream(socket.getOutputStream());
+            is = new ObjectDecoderInputStream(socket.getInputStream());
 
-        Socket socket = new Socket("localhost", 8089);
-        os = new ObjectEncoderOutputStream(socket.getOutputStream());
-        is = new ObjectDecoderInputStream(socket.getInputStream());
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+            Thread readThread = new Thread(() -> {
                 try {
                     while (true) {
                         AbstractCommand command = (AbstractCommand) is.readObject();
                         switch (command.getType()) {
-                            case AUTOK:
+                            case AUTHOK:
                                 Platform.runLater(() -> {
                                     Stage stage = (Stage) loginTF.getScene().getWindow();
                                     stage.close();
                                 });
+                                break;
+                            case AUTHERR:
+                                Platform.runLater(() -> {
+                                    alertWin("Ошибка авторизации", "Что-то пошло не так!");
+                                });
+                                break;
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        }).start();
-
+            });
+            readThread.setDaemon(true);
+            readThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
-    private void auth() throws IOException {
-        try (Connection connection = DriverManager
-                .getConnection("jdbc:postgresql://Localhost:5432/auth_users", "Evka", "123");) {
-            PreparedStatement ps = connection.prepareStatement("select * from auth_user where login_us =? and pass_us=?");
-            ps.setString(1, loginTF.getText());
-            ps.setString(2, passwordTF.getText());
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                nick = rs.getString("nick_us");
-                break;
+    private void auth() throws IOException, SQLException {
+        if (passwordTF.getText() != null && !passwordTF.getText().trim().isEmpty()) {
+            os.writeObject(new AuthOk(loginTF.getText(), passwordTF.getText()));
+            os.flush();
+        } else {
+            alertWin("Введите пароль!", "Password cannot be empty");
         }
-    } catch(SQLException e){
-        e.printStackTrace();
     }
-        if(passwordTF.getText()==null&&passwordTF.getText().trim().isEmpty())
-    {
-        os.writeObject(new AuthUser());
-        os.flush();
+
+    private void alertWin(String s1, String s2){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(s1);
+        alert.setHeaderText(null);
+        alert.setContentText(s2);
+        alert.showAndWait();
     }
-}
+
     @FXML
     private String getLogin() throws IOException {
         return loginTF.getText();

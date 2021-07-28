@@ -1,7 +1,8 @@
 package model;
 
 public enum CommandType{
-    AUTOK,
+    AUTHOK,
+    AUTHERR,
     FILE_REQUEST,
     LIST_REQUEST,
     LIST_MESSAGE,

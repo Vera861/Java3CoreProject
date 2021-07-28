@@ -46,7 +46,7 @@ public class ChatController implements Initializable {
             String userDir = System.getProperty("user.name");
             currentDir = Paths.get("/Users", userDir).toAbsolutePath();
             log.info("Current user: {}", System.getProperty("user.name"));
-            Socket socket = new Socket("localhost", 8089);
+            Socket socket = new ConnectionServer().getSocket();
             os = new ObjectEncoderOutputStream(socket.getOutputStream());
             is = new ObjectDecoderInputStream(socket.getInputStream());
 
@@ -148,22 +148,20 @@ public class ChatController implements Initializable {
         os.flush();
     }
 
-    public void downFile(ActionEvent actionEvent) throws IOException {
+    public void downFile() throws IOException {
         String fileName = serverList.getSelectionModel().getSelectedItem();
         os.writeObject(new FileRequest(fileName));
         os.flush();
     }
 
-    public void clientUp(ActionEvent actionEvent) throws IOException {
+    public void clientUp() throws IOException {
         currentDir =  currentDir.getParent();
         clientPath.setText(currentDir.toString());
         refreshClientView();
 
     }
-    public void serverUp(ActionEvent actionEvent) throws IOException {
+    public void serverUp() throws IOException {
         os.writeObject(new PathUpRequest());
         os.flush();
     }
-
-
 }
