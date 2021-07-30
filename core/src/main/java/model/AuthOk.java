@@ -38,6 +38,10 @@ public class AuthOk extends AbstractCommand {
         } return false;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
     @Override
     public CommandType getType() {
         if (isAuth()) return CommandType.AUTHOK;

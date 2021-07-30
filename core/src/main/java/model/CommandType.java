@@ -3,6 +3,7 @@ package model;
 public enum CommandType{
     AUTHOK,
     AUTHERR,
+    DELETE,
     FILE_REQUEST,
     LIST_REQUEST,
     LIST_MESSAGE,

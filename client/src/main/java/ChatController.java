@@ -164,4 +164,10 @@ public class ChatController implements Initializable {
         os.writeObject(new PathUpRequest());
         os.flush();
     }
+
+    public void delFile() throws IOException {
+        String fileName = serverList.getSelectionModel().getSelectedItem();
+        os.writeObject(new FileDel(currentDir.resolve(fileName)));
+        os.flush();
+    }
 }

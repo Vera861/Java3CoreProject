@@ -3,6 +3,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import model.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,6 +47,12 @@ public class MessageHandler extends SimpleChannelInboundHandler<AbstractCommand>
                 chc.writeAndFlush((msg));
                 break;
 
+            case DELETE:
+                FileDel fileDel = (FileDel) command;
+                Files.deleteIfExists(currentPath.resolve(fileDel.getName()));
+                chc.writeAndFlush(new ListResponse(currentPath));
+                break;
+
             case MESSAGE:
                 Message message = (Message) command;
                 Files.write(currentPath.resolve(message.getName()), message.getData());
@@ -65,6 +72,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<AbstractCommand>
                 PathInRequest request = (PathInRequest) command;
                 Path newPath = currentPath.resolve(request.getDir());
                 if (Files.isDirectory(newPath)) {
+                    currentPath = newPath;
                     chc.writeAndFlush(new PathUpResponse(currentPath.toString()));
                     chc.writeAndFlush(new ListResponse(currentPath));
                 }
